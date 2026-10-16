@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: fraud-rule-engine
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fraud}
+    username: ${DB_USERNAME:fraud}
+    password: ${DB_PASSWORD:fraud}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Fraud rule parameters. Every value can be overridden via environment variable,
+# e.g. FRAUD_HIGH_VALUE_CLAIM_THRESHOLD=75000.00
+fraud:
+  review-threshold: ${FRAUD_REVIEW_THRESHOLD:40}
+  investigate-threshold: ${FRAUD_INVESTIGATE_THRESHOLD:70}
+  high-value-claim-threshold: ${FRAUD_HIGH_VALUE_CLAIM_THRESHOLD:50000.00}
+  high-value-claim-weight: ${FRAUD_HIGH_VALUE_CLAIM_WEIGHT:25}
+  claim-velocity-max-claims: ${FRAUD_CLAIM_VELOCITY_MAX_CLAIMS:3}
+  claim-velocity-window-days: ${FRAUD_CLAIM_VELOCITY_WINDOW_DAYS:30}
+  claim-velocity-weight: ${FRAUD_CLAIM_VELOCITY_WEIGHT:30}
+  round-amount-minimum: ${FRAUD_ROUND_AMOUNT_MINIMUM:10000.00}
+  round-amount-multiple: ${FRAUD_ROUND_AMOUNT_MULTIPLE:1000.00}
+  round-amount-weight: ${FRAUD_ROUND_AMOUNT_WEIGHT:10}
+  early-claim-window-days: ${FRAUD_EARLY_CLAIM_WINDOW_DAYS:30}
+  early-claim-weight: ${FRAUD_EARLY_CLAIM_WEIGHT:20}
+  beneficiary-change-window-days: ${FRAUD_BENEFICIARY_CHANGE_WINDOW_DAYS:14}
+  beneficiary-change-weight: ${FRAUD_BENEFICIARY_CHANGE_WEIGHT:25}
+  duplicate-window-days: ${FRAUD_DUPLICATE_WINDOW_DAYS:7}
+  duplicate-claim-weight: ${FRAUD_DUPLICATE_CLAIM_WEIGHT:35}
