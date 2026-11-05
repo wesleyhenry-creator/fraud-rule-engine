@@ -1,0 +1,26 @@
+Task Name,Description,Status,Priority,Tags,Story Points,Sprint,Epic,Depends On
+Verify build and run test suite,"Run mvn clean verify and docker compose up --build. Fix any compile or test failures found on first build (sandbox build not yet run).",to do,urgent,verification;backend,3,Sprint 1,Foundation,
+Verify Flyway migration against PostgreSQL 16,"Run V1__create_fraud_schema.sql on PostgreSQL 16 and confirm Hibernate ddl-auto=validate passes at startup.",to do,urgent,database;verification,2,Sprint 1,Persistence,Verify build and run test suite
+Verify ERD matches schema,"Cross-check docs/erd.md against V1 migration and JPA entities; update diagram if any column differs.",to do,normal,documentation,1,Sprint 1,Persistence,
+Implement HIGH_VALUE_CLAIM rule,"Claim at or above R50,000 adds 25 points. Unit tests at threshold boundary.",complete,high,rules,2,Sprint 1,Fraud Rules,
+Implement CLAIM_VELOCITY rule,"More than 3 claims on a policy within 30 days adds 30 points. Window uses occurred_at.",complete,high,rules,3,Sprint 1,Fraud Rules,
+Implement ROUND_AMOUNT_CLAIM rule,"Claim of R10,000 or more that is an exact multiple of R1,000 adds 10 points.",complete,normal,rules,2,Sprint 1,Fraud Rules,
+Implement EARLY_CLAIM rule,"Claim within 30 days of policy inception adds 20 points. Dates evaluated in Africa/Johannesburg.",complete,high,rules,2,Sprint 1,Fraud Rules,
+Implement RECENT_BENEFICIARY_CHANGE_PAYOUT rule,"Payout to an account nominated as beneficiary within 14 days adds 25 points.",complete,high,rules,3,Sprint 1,Fraud Rules,
+Implement DUPLICATE_CLAIM rule,"Claim repeating a claim reference, or same amount and payee, within 7 days adds 35 points.",complete,high,rules,3,Sprint 1,Fraud Rules,
+Implement weighted scoring engine,"Sum fired weights, cap at 100, map to LOW/MEDIUM/HIGH and CLEAR/REFER_FOR_REVIEW/FLAG_FOR_INVESTIGATION thresholds.",complete,urgent,scoring,3,Sprint 1,Fraud Rules,Implement HIGH_VALUE_CLAIM rule
+Persist transaction events and assessments,"Save event and assessment in one DB transaction. Unique constraint on transaction_id and one-to-one assessment.",complete,urgent,persistence,3,Sprint 1,Persistence,Verify Flyway migration against PostgreSQL 16
+Implement POST /api/v1/transactions,"Validate payload, assess, return 201 with Location header. Return 409 on duplicate transaction_id.",complete,urgent,api,3,Sprint 1,REST API,Persist transaction events and assessments
+Implement GET /api/v1/assessments/{transactionId},"Return stored assessment or 404 problem response.",complete,high,api,2,Sprint 1,REST API,Persist transaction events and assessments
+Implement GET /api/v1/assessments search,"Filter by decision, riskLevel, policyNumber, from, to. Paginated, newest first, max page size 100.",complete,high,api,3,Sprint 1,REST API,Persist transaction events and assessments
+Implement GET /api/v1/rules,"List active rule codes, descriptions and weights.",complete,normal,api,1,Sprint 1,REST API,Implement weighted scoring engine
+Mask account identifiers in output,"Account numbers appear as ****1234 in rule reasons and responses. Never logged.",complete,high,security;popia,2,Sprint 1,Security,Implement RECENT_BENEFICIARY_CHANGE_PAYOUT rule
+Add unit tests for all rules,"Boundary tests for each rule's firing and non-firing cases.",complete,high,testing,3,Sprint 1,Testing,Implement DUPLICATE_CLAIM rule
+Add API integration tests,"MockMvc tests on H2 in PostgreSQL mode covering the HTTP contract, validation, duplicates, and a multi-transaction fraud sequence.",complete,high,testing,3,Sprint 1,Testing,Implement GET /api/v1/rules
+Dockerfile and docker-compose,"Multi-stage build running tests, non-root runtime, compose with PostgreSQL 16 and health check.",complete,high,devops,3,Sprint 1,DevOps,Verify build and run test suite
+Add authentication to API,"OAuth2/JWT or mTLS via gateway, with read and write scopes. Not started; out of scope for Sprint 1.",to do,urgent,security,5,Sprint 2,Security,
+Encrypt account and policy identifiers at rest,"Field-level encryption or tokenisation for account_id, payee_account_id and policy_number.",to do,urgent,security;popia,5,Sprint 2,Security,Add authentication to API
+Route REFER and FLAG results to investigator queue,"Create case records for REFER_FOR_REVIEW and FLAG_FOR_INVESTIGATION outcomes.",to do,high,case-management,8,Sprint 2,Case Management,Verify build and run test suite
+Kafka ingestion option,"Consume categorised events from Kafka using the same service layer. Keep REST as fallback.",to do,normal,ingestion,8,Sprint 3,Ingestion,Verify build and run test suite
+Rule backtesting against labelled outcomes,"Replay historical events against a rule set and report precision and recall per rule.",to do,normal,rules;analytics,8,Sprint 3,Rule Governance,Route REFER and FLAG results to investigator queue
+Rule versioning and change log,"Version rule weights and thresholds. Record which version produced each assessment.",to do,normal,rules,5,Sprint 3,Rule Governance,Rule backtesting against labelled outcomes

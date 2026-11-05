@@ -1,11 +1,14 @@
+
 services:
   db:
     image: postgres:16-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: fraud
       POSTGRES_USER: fraud
-      # Local development only. Override via an .env file or your secret manager for any shared environment.
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-fraud}
+      # Local development only. Use a secure password from your .env file.
+      POSTGRES_PASSWORD: Wesley
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +25,7 @@ services:
     environment:
       DB_URL: jdbc:postgresql://db:5432/fraud
       DB_USERNAME: fraud
-      DB_PASSWORD: ${DB_PASSWORD:-fraud}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - "8080:8080"
 

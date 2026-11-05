@@ -16,6 +16,8 @@ The easiest way to run the service with its database:
 docker compose up --build
 ```
 
+The compose file starts PostgreSQL and sets `DB_URL` to `jdbc:postgresql://db:5432/fraud` for the app container, since `db` is only resolvable inside the Docker network.
+
 The API is then available at `http://localhost:8080`. Swagger UI is at `http://localhost:8080/swagger-ui.html`.
 
 To run only the container image, supply your own PostgreSQL:
@@ -30,11 +32,11 @@ docker run --rm -p 8080:8080 \
 
 ## Build and test
 
-Requirements for local builds: JDK 17+ and Maven 3.9+.
+Requirements for local builds: JDK 17+ and Maven 3.9+. The Docker image builds with JDK 17.
 
 ```bash
 mvn clean verify          # compiles, runs unit and integration tests
-mvn spring-boot:run       # runs against localhost:5432 by default (see Configuration)
+mvn spring-boot:run       # connects to localhost:5432 by default (see Configuration)
 ```
 
 Tests use an in-memory H2 database in PostgreSQL mode, so no external services are needed. The Docker build also runs the full test suite; a failing test fails the image build.
@@ -117,8 +119,8 @@ Settings are validated at startup. For instance, the review threshold must not e
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/fraud` | JDBC URL |
-| `DB_USERNAME` / `DB_PASSWORD` | `fraud` / `fraud` | Database credentials, local defaults only |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/fraud` | JDBC URL. Docker Compose sets this to the `db` service. |
+| `DB_USERNAME` / `DB_PASSWORD` | `fraud` / `fraud` | Database credentials. Local defaults only; set real values outside development. |
 | `DB_POOL_SIZE` | `10` | Hikari maximum pool size |
 | `PORT` | `8080` | HTTP port |
 | `JAVA_OPTS` | `-XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError` | JVM options (Docker image) |
